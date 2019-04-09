@@ -1,4 +1,4 @@
-#~/bin/bash
+#!/bin/bash
 
 # This will iterate through the steam storefront and gather appids from the html returned.
 # category3=1 -- multiplayer
@@ -14,7 +14,9 @@ outFile="./appids/$date.games"
 X=1
 keepgoing=1
 while (( $keepgoing > 0 && $X < 200 )); do
-	games="$(curl -s "http://store.steampowered.com/search/?sort_by=Released_DESC&category3=1&vrsupport=402&page=$X" | sed -n 's/.*appid="\([0-9]\+\).*/\1/p' )"
+	games="$(wget -q -O- "http://store.steampowered.com/search/?sort_by=Released_DESC&category3=36&vrsupport=402&page=$X" | \
+	sed -n 's/.*appid="\([0-9]\+\).*/\1/p' )"
+	
 	if [ "$games" != "" ] 
 	then
 		echo "$games"

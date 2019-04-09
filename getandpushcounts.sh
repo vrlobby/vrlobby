@@ -19,10 +19,12 @@ hour=$(date +"%H")
 mins=$(date +"%M")
 quarter=$(( $mins / 15 ))
 
+echo "$appids"
+
 while read appid; do
-	count="$(curl -s "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key=$STEAMKEY&format=json&appid=$appid" | sed -n 's/.*count": \(.*\+\),/\1/p' )"
-	echo -n "$appid:$count,"
-done <$appids >$outFile
+	count="$(wget -q -O- "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key=$STEAMKEY&format=json&appid=$appid" | sed -n 's/.*count":\(.*\+\),".*/\1/p' )"
+	echo "$appid:$count"
+done <$appids | sort -t ':' -k 2,2rn | tr '\n' ',' > $outFile
 
 counts="$( cat $outFile )"
 item="{\"date\": { \"S\": \"$date\"}, \"datetime\": { \"N\": \"$datetime\"}, \"hour\": { \"N\": \"$hour\"}, \"quarter\": { \"N\": \"$quarter\"}, \"counts\": {\"S\": \"$counts\"} }"
